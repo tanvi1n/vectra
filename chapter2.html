@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: Work and Energy - VECTRA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <a href="index.html" class="navbar-logo">
+                    <span class="logo-icon">●</span>
+                    <span class="logo-text">VECTRA</span>
+                </a>
+                <ul class="navbar-links">
+                    <li><a href="chapters.html">Chapters</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Chapter Page Container -->
+    <div class="chapter-container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <h2 class="chapter-page-title">Work & Energy Simulator</h2>
+            
+            <!-- Input Section -->
+            <div class="input-section">
+                <textarea 
+                    id="problemInput" 
+                    class="problem-textarea" 
+                    placeholder="Example: A 5 kg box slides down a 30 degree incline with friction 0.2. Find acceleration and work done over 10 m."
+                    maxlength="500"
+                ></textarea>
+                <div class="input-meta">
+                    <p class="helper-text">Supported: Work, kinetic energy, potential energy, power, conservation, inclined planes.</p>
+                    <span class="char-count"><span id="charCount">0</span>/500</span>
+                </div>
+                <button class="btn btn-block btn-visualize" id="visualizeBtn" disabled>
+                    <span class="btn-text">Visualize</span>
+                    <span class="btn-loader" style="display: none;">Loading...</span>
+                </button>
+                <p class="error-message" id="errorMessage"></p>
+            </div>
+
+            <!-- Given Parameters Card -->
+            <div class="result-card">
+                <h3 class="result-card-title">Given Parameters</h3>
+                <div class="result-card-content" id="givenParams">
+                    <p class="empty-state">Enter a problem to see parameters</p>
+                </div>
+            </div>
+
+            <!-- Deduced Parameters Card -->
+            <div class="result-card">
+                <h3 class="result-card-title">Deduced Parameters</h3>
+                <div class="result-card-content" id="deducedParams">
+                    <p class="empty-state">Calculated values will appear here</p>
+                </div>
+            </div>
+
+            <!-- Required Results Card -->
+            <div class="result-card">
+                <h3 class="result-card-title">Required Results</h3>
+                <div class="result-card-content" id="requiredResults">
+                    <p class="empty-state">Results will be displayed here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="simulation-container">
+                <canvas id="simulationCanvas" width="800" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/parser.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
