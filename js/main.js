@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!parsedData) {
                     // Show error
                     if (errorMessage) {
-                        errorMessage.textContent = 'Currently supports free fall, vertical motion, and projectile motion problems only.';
+                        errorMessage.textContent = 'Unable to parse problem. Try: "A ball is dropped from 50m", "thrown at 20 m/s at 45 degrees", "thrown horizontally at 15 m/s from 30m height".';
                     }
                     
                     // Reset button
@@ -134,6 +134,15 @@ function displayGivenParameters(given) {
     
     let html = '<div class="param-list">';
     
+    if (given.mass !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Mass:</span><span class="param-value">${given.mass} kg</span></div>`;
+    }
+    if (given.force !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Force:</span><span class="param-value">${given.force} N</span></div>`;
+    }
+    if (given.distance !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Distance:</span><span class="param-value">${given.distance} m</span></div>`;
+    }
     if (given.velocity !== undefined) {
         html += `<div class="param-item"><span class="param-label">Initial Velocity:</span><span class="param-value">${given.velocity} m/s</span></div>`;
     }
@@ -142,6 +151,12 @@ function displayGivenParameters(given) {
     }
     if (given.height !== undefined) {
         html += `<div class="param-item"><span class="param-label">Initial Height:</span><span class="param-value">${given.height} m</span></div>`;
+    }
+    if (given.time !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Time:</span><span class="param-value">${given.time} s</span></div>`;
+    }
+    if (given.friction !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Friction (μ):</span><span class="param-value">${given.friction}</span></div>`;
     }
     html += `<div class="param-item"><span class="param-label">Gravity:</span><span class="param-value">${given.gravity} m/s²</span></div>`;
     
@@ -161,6 +176,33 @@ function displayDeducedParameters(deduced) {
     if (deduced.vy !== undefined) {
         html += `<div class="param-item"><span class="param-label">Vertical Velocity:</span><span class="param-value">${deduced.vy.toFixed(2)} m/s</span></div>`;
     }
+    if (deduced.work !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Work Done:</span><span class="param-value">${deduced.work.toFixed(2)} J</span></div>`;
+    }
+    if (deduced.kineticEnergy !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Kinetic Energy:</span><span class="param-value">${deduced.kineticEnergy.toFixed(2)} J</span></div>`;
+    }
+    if (deduced.potentialEnergy !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Potential Energy:</span><span class="param-value">${deduced.potentialEnergy.toFixed(2)} J</span></div>`;
+    }
+    if (deduced.totalEnergy !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Total Energy:</span><span class="param-value">${deduced.totalEnergy.toFixed(2)} J</span></div>`;
+    }
+    if (deduced.power !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Power:</span><span class="param-value">${deduced.power.toFixed(2)} W</span></div>`;
+    }
+    if (deduced.acceleration !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Acceleration:</span><span class="param-value">${deduced.acceleration.toFixed(2)} m/s²</span></div>`;
+    }
+    if (deduced.normalForce !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Normal Force:</span><span class="param-value">${deduced.normalForce.toFixed(2)} N</span></div>`;
+    }
+    if (deduced.frictionForce !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Friction Force:</span><span class="param-value">${deduced.frictionForce.toFixed(2)} N</span></div>`;
+    }
+    if (deduced.netForce !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Net Force:</span><span class="param-value">${deduced.netForce.toFixed(2)} N</span></div>`;
+    }
     
     html += '</div>';
     container.innerHTML = html;
@@ -172,6 +214,21 @@ function displayRequiredResults(deduced, required) {
     
     let html = '<div class="param-list">';
     
+    if (required.includes('work') && deduced.work !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Work Done:</span><span class="param-value">${deduced.work.toFixed(2)} J</span></div>`;
+    }
+    if (required.includes('kinetic') && deduced.kineticEnergy !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Kinetic Energy:</span><span class="param-value">${deduced.kineticEnergy.toFixed(2)} J</span></div>`;
+    }
+    if (required.includes('potential') && deduced.potentialEnergy !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Potential Energy:</span><span class="param-value">${deduced.potentialEnergy.toFixed(2)} J</span></div>`;
+    }
+    if (required.includes('power') && deduced.power !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Power:</span><span class="param-value">${deduced.power.toFixed(2)} W</span></div>`;
+    }
+    if (required.includes('velocity') && deduced.finalVelocity !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Final Velocity:</span><span class="param-value">${deduced.finalVelocity.toFixed(2)} m/s</span></div>`;
+    }
     if (required.includes('time') && deduced.timeOfFlight !== undefined) {
         html += `<div class="param-item highlight"><span class="param-label">Time of Flight:</span><span class="param-value">${deduced.timeOfFlight.toFixed(2)} s</span></div>`;
     }
@@ -181,8 +238,11 @@ function displayRequiredResults(deduced, required) {
     if (required.includes('range') && deduced.range !== undefined) {
         html += `<div class="param-item highlight"><span class="param-label">Range:</span><span class="param-value">${deduced.range.toFixed(2)} m</span></div>`;
     }
-    if (required.includes('velocity') && deduced.finalVelocity !== undefined) {
-        html += `<div class="param-item highlight"><span class="param-label">Final Velocity:</span><span class="param-value">${deduced.finalVelocity.toFixed(2)} m/s</span></div>`;
+    if (required.includes('acceleration') && deduced.acceleration !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Acceleration:</span><span class="param-value">${deduced.acceleration.toFixed(2)} m/s²</span></div>`;
+    }
+    if (required.includes('force') && deduced.netForce !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Net Force:</span><span class="param-value">${deduced.netForce.toFixed(2)} N</span></div>`;
     }
     
     html += '</div>';
