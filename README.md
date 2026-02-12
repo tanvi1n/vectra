@@ -53,3 +53,6 @@ VECTRA is an interactive web application designed to help users simulate and vis
 2.  Select a chapter (e.g., "1D and 2D Motion").
 3.  On the chapter page, enter a physics problem in the provided text area (e.g., "A ball is thrown at 20 m/s at 45 degrees from a height of 10m. Find maximum height and range.").
 4.  Click "Visualize" to see the parsed parameters, calculated results, and an interactive simulation of the problem.
+
+## Demo Video
+https://drive.google.com/file/d/1nKDWc1QrkrFIhJg721TPDvFgYRFE8l6R/view?usp=sharing
