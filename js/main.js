@@ -206,6 +206,14 @@ function displayGivenParameters(given) {
             </div>`;
     }
     if (given.radius !== undefined) {
+    if (given.length !== undefined) {
+        html += `
+            <div class="param-item editable">
+                <span class="param-label">Length:</span>
+                <input type="number" class="param-input" data-param="length" value="${given.length}" min="0.1" step="0.1">
+                <span class="param-unit">m</span>
+            </div>`;
+    }
         html += `
             <div class="param-item editable">
                 <span class="param-label">Radius:</span>
@@ -362,6 +370,12 @@ function displayRequiredResults(deduced, required) {
         html += `<div class="param-item highlight"><span class="param-label">Maximum Speed:</span><span class="param-value">${deduced.maxSpeed.toFixed(2)} m/s</span></div>`;
     }
     if (required.includes('time') && deduced.timeOfFlight !== undefined) {
+    if (required.includes('period') && deduced.period !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Period:</span><span class="param-value">${deduced.period.toFixed(2)} s</span></div>`;
+    }
+    if (required.includes('frequency') && deduced.frequency !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Frequency:</span><span class="param-value">${deduced.frequency.toFixed(2)} Hz</span></div>`;
+    }
         html += `<div class="param-item highlight"><span class="param-label">Time of Flight:</span><span class="param-value">${deduced.timeOfFlight.toFixed(2)} s</span></div>`;
     }
     if (required.includes('height') && deduced.maxHeight !== undefined) {

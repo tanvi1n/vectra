@@ -44,7 +44,7 @@ function animate() {
     // Calculate elapsed time
     
     // Work-energy visualizations (static)
-    if (type === 'work' || type === 'kinetic' || type === 'potential' || type === 'power' || type === 'conservation' || type === 'incline' || type === 'circular') {
+    if (type === 'work' || type === 'kinetic' || type === 'potential' || type === 'power' || type === 'conservation' || type === 'incline' || type === 'circular' || type === 'pendulum') {
         drawWorkEnergyVisualization(ctx, canvas, simulationData);
         return;
     }
@@ -430,12 +430,18 @@ function drawWorkEnergyVisualization(ctx, canvas, data) {
     const { type, given, deduced } = data;
     
     // Circular motion visualization
-    if (type === 'circular') {
+    if (type === 'circular' || type === 'pendulum') {
         drawCircularMotion(ctx, canvas, data);
         return;
     }
     
     // Inclined plane visualization
+    // Pendulum visualization
+    if (type === 'pendulum') {
+        drawPendulum(ctx, canvas, data);
+        return;
+    }
+    
     if (type === 'incline') {
         drawInclinedPlane(ctx, canvas, data);
         return;
@@ -841,4 +847,108 @@ function drawCircularMotion(ctx, canvas, data) {
     
     // Continue animation
     animationId = requestAnimationFrame(animate);
+}
+
+
+function drawPendulum(ctx, canvas, data) {
+    try {
+        const { given, deduced } = data;
+        
+        ctx.fillStyle = '#0d0b14';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        const elapsed = (Date.now() - startTime) / 1000;
+        const period = deduced.period || 2;
+        const progress = (elapsed % period) / period;
+        
+        ctx.fillStyle = '#FF2FA3';
+        ctx.font = 'bold 18px "Press Start 2P", monospace';
+        ctx.fillText('Simple Pendulum', canvas.width / 2 - 140, 40);
+        
+        const pivotX = canvas.width / 2;
+        const pivotY = 100;
+        const length = Math.min(deduced.length * 50, 250);
+        const amplitude = (deduced.amplitude || 10) * Math.PI / 180;
+        const currentAngle = amplitude * Math.cos(2 * Math.PI * progress);
+        const bobX = pivotX + length * Math.sin(currentAngle);
+        const bobY = pivotY + length * Math.cos(currentAngle);
+        
+        ctx.fillStyle = '#3d3650';
+        ctx.beginPath();
+        ctx.arc(pivotX, pivotY, 8, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        ctx.strokeStyle = '#CFA7FF';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pivotX, pivotY);
+        ctx.lineTo(bobX, bobY);
+        ctx.stroke();
+        
+        ctx.fillStyle = '#FF4DC4';
+        ctx.beginPath();
+        ctx.arc(bobX, bobY, 15, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = '#2A0E44';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.strokeStyle = '#3d3650';
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(pivotX, pivotY);
+        ctx.lineTo(pivotX, pivotY + length + 20);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        const panelX = canvas.width - 250;
+        const panelY = 80;
+        const panelWidth = 230;
+        const panelHeight = 200;
+        
+        ctx.fillStyle = 'rgba(58, 10, 92, 0.9)';
+        ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+        ctx.strokeStyle = '#2A0E44';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+        
+        ctx.fillStyle = '#CFA7FF';
+        ctx.font = '11px Inter';
+        let yPos = panelY + 20;
+        const lineHeight = 18;
+        
+        ctx.fillText(`Time: ${elapsed.toFixed(2)} s`, panelX + 10, yPos);
+        yPos += lineHeight;
+        ctx.fillText(`Angle: ${(currentAngle * 180 / Math.PI).toFixed(1)}°`, panelX + 10, yPos);
+        yPos += lineHeight;
+        
+        if (deduced.length) {
+            ctx.fillText(`Length: ${deduced.length.toFixed(2)} m`, panelX + 10, yPos);
+            yPos += lineHeight;
+        }
+        if (deduced.amplitude) {
+            ctx.fillText(`Amplitude: ${deduced.amplitude.toFixed(1)}°`, panelX + 10, yPos);
+            yPos += lineHeight;
+        }
+        if (deduced.period) {
+            ctx.fillText(`Period: ${deduced.period.toFixed(2)} s`, panelX + 10, yPos);
+            yPos += lineHeight;
+        }
+        if (deduced.frequency) {
+            ctx.fillText(`Frequency: ${deduced.frequency.toFixed(2)} Hz`, panelX + 10, yPos);
+            yPos += lineHeight;
+        }
+        if (deduced.maxVelocity) {
+            ctx.fillText(`Max Velocity: ${deduced.maxVelocity.toFixed(2)} m/s`, panelX + 10, yPos);
+            yPos += lineHeight;
+        }
+        if (deduced.totalEnergy) {
+            ctx.fillText(`Total Energy: ${deduced.totalEnergy.toFixed(2)} J`, panelX + 10, yPos);
+        }
+        
+        animationId = requestAnimationFrame(animate);
+        
+    } catch (error) {
+        console.error('Error in drawPendulum:', error);
+    }
 }
