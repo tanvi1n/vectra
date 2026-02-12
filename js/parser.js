@@ -89,7 +89,9 @@ function parsePhysicsProblem(text) {
     let type = null;
     
     // PRIORITY: Check what user is explicitly asking for
-    if (text.includes('find potential energy') || text.includes('calculate potential energy') || text.includes('potential energy of')) {
+    if (text.includes('pendulum')) {
+        type = 'pendulum';
+    } else if (text.includes('find potential energy') || text.includes('calculate potential energy') || text.includes('potential energy of')) {
         type = 'potential';
     } else if (text.includes('kinetic energy at ground') || text.includes('kinetic energy at bottom') || text.includes('velocity at ground') || (text.includes('kinetic energy') && (text.includes('falls') || text.includes('drops') || text.includes('dropped') || text.includes('fall from') || text.includes('drop from')))) {
         type = 'conservation';
