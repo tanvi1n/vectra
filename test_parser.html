@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Parser Test</title></head>
+<body>
+<h2>Parser Test</h2>
+<textarea id="input" rows="3" cols="60" placeholder="Enter physics problem"></textarea><br>
+<button onclick="test()">Test Parse</button>
+<pre id="output"></pre>
+
+<script src="js/parser.js"></script>
+<script>
+function test() {
+    const text = document.getElementById('input').value;
+    const result = parsePhysicsProblem(text);
+    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+}
+</script>
+</body>
+</html>
