@@ -430,18 +430,18 @@ function drawWorkEnergyVisualization(ctx, canvas, data) {
     const { type, given, deduced } = data;
     
     // Circular motion visualization
-    if (type === 'circular' || type === 'pendulum') {
+    if (type === 'circular') {
         drawCircularMotion(ctx, canvas, data);
         return;
     }
     
-    // Inclined plane visualization
     // Pendulum visualization
     if (type === 'pendulum') {
         drawPendulum(ctx, canvas, data);
         return;
     }
     
+    // Inclined plane visualization
     if (type === 'incline') {
         drawInclinedPlane(ctx, canvas, data);
         return;
