@@ -7,9 +7,23 @@ function parsePhysicsProblem(text) {
     
     // Detect problem type
     let type = null;
-    if (text.includes('incline') || text.includes('inclined') || text.includes('slope') || text.includes('ramp')) {
+    if (text.includes('circular') || text.includes('circle') || text.includes('centripetal') || text.includes('angular')) {
+        type = 'circular';
+    } else if (text.includes('angle') || text.includes('launched') || text.includes('projectile') || text.includes('degrees') || text.includes('°')) {
+        type = 'projectile';
+    } else if (text.includes('horizontally') && (text.includes('thrown') || text.includes('throw') || text.includes('launch'))) {
+        type = 'horizontal_projectile';
+    } else if (text.includes('dropped') || text.includes('drop') || text.includes('free fall') || text.includes('freefall') || text.includes('falls freely')) {
+        type = 'freefall';
+    } else if (text.includes('thrown upward') || text.includes('throw upward') || text.includes('thrown up') || text.includes('upward') || text.includes('straight up') || text.includes('vertically up') || text.includes('upwards') || text.includes('tossed up') || (text.includes('up') && text.includes('vertical'))) {
+        type = 'vertical';
+    } else if (text.includes('thrown downward') || text.includes('throw downward') || text.includes('thrown down') || text.includes('downward') || text.includes('straight down') || text.includes('vertically down')) {
+        type = 'vertical_down';
+    } else if (text.includes('horizontal') && (text.includes('motion') || text.includes('moving') || text.includes('travels') || text.includes('velocity'))) {
+        type = 'horizontal';
+    } else if (text.includes('incline') || text.includes('inclined') || text.includes('slope') || text.includes('ramp')) {
         type = 'incline';
-    } else if (text.includes('work') || text.includes('force') && text.includes('distance')) {
+    } else if (text.includes('work') || (text.includes('force') && text.includes('distance'))) {
         type = 'work';
     } else if (text.includes('kinetic energy') || text.includes('ke')) {
         type = 'kinetic';
@@ -19,18 +33,6 @@ function parsePhysicsProblem(text) {
         type = 'power';
     } else if (text.includes('conservation') || (text.includes('energy') && (text.includes('convert') || text.includes('transform')))) {
         type = 'conservation';
-    } else if (text.includes('horizontally') && (text.includes('thrown') || text.includes('throw') || text.includes('launch'))) {
-        type = 'horizontal_projectile';
-    } else if (text.includes('dropped') || text.includes('drop') || text.includes('free fall') || text.includes('freefall') || text.includes('falls freely')) {
-        type = 'freefall';
-    } else if (text.includes('thrown upward') || text.includes('throw upward') || text.includes('thrown up') || text.includes('upward') || text.includes('straight up') || text.includes('vertically up') || text.includes('upwards') || text.includes('tossed up') || (text.includes('up') && text.includes('vertical'))) {
-        type = 'vertical';
-    } else if (text.includes('thrown downward') || text.includes('throw downward') || text.includes('thrown down') || text.includes('downward') || text.includes('straight down') || text.includes('vertically down')) {
-        type = 'vertical_down';
-    } else if (text.includes('angle') || text.includes('launched') || text.includes('projectile') || text.includes('degrees') || text.includes('°')) {
-        type = 'projectile';
-    } else if (text.includes('horizontal') && (text.includes('motion') || text.includes('moving') || text.includes('travels') || text.includes('velocity'))) {
-        type = 'horizontal';
     } else {
         return null;
     }
@@ -72,6 +74,10 @@ function parsePhysicsProblem(text) {
     const angleMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:degrees|°|deg)/);
     const angle = angleMatch ? parseFloat(angleMatch[1]) : null;
     
+    // Extract radius (m)
+    const radiusMatch = text.match(/radius\s+(?:of\s+)?(\d+(?:\.\d+)?)\s*m/);
+    const radius = radiusMatch ? parseFloat(radiusMatch[1]) : null;
+    
     // Extract friction coefficient
     const frictionMatch = text.match(/(?:friction|μ|mu)\s*=?\s*(\d+(?:\.\d+)?)/);
     const friction = frictionMatch ? parseFloat(frictionMatch[1]) : null;
@@ -87,6 +93,12 @@ function parsePhysicsProblem(text) {
     }
     if (text.includes('force')) {
         required.push('force');
+    }
+    if (text.includes('period')) {
+        required.push('period');
+    }
+    if (text.includes('frequency')) {
+        required.push('frequency');
     }
     if (text.includes('work done') || text.includes('work')) {
         required.push('work');
@@ -115,7 +127,9 @@ function parsePhysicsProblem(text) {
     
     // If nothing specific requested, show all relevant
     if (required.length === 0) {
-        if (type === 'incline') {
+        if (type === 'circular') {
+            required.push('force', 'acceleration', 'period');
+        } else if (type === 'incline') {
             required.push('acceleration', 'force', 'work');
         } else if (type === 'work' || type === 'kinetic' || type === 'potential' || type === 'power' || type === 'conservation') {
             required.push('work', 'kinetic', 'potential');
@@ -134,6 +148,7 @@ function parsePhysicsProblem(text) {
     if (time !== null) given.time = time;
     if (angle !== null) given.angle = angle;
     if (friction !== null) given.friction = friction;
+    if (radius !== null) given.radius = radius;
     given.gravity = gravity;
     
     return {
@@ -150,7 +165,18 @@ function calculatePhysics(data) {
     const g = given.gravity || 9.8;
     const deduced = {};
     
-    if (type === 'incline') {
+    if (type === 'circular') {
+        const m = given.mass || 0;
+        const v = given.velocity || 0;
+        const r = given.radius || 1;
+        
+        deduced.centripetalAcceleration = (v * v) / r;
+        deduced.centripetalForce = m * deduced.centripetalAcceleration;
+        deduced.angularVelocity = v / r;
+        deduced.period = (2 * Math.PI * r) / v;
+        deduced.frequency = 1 / deduced.period;
+        
+    } else if (type === 'incline') {
         const m = given.mass || 0;
         const theta = (given.angle || 30) * Math.PI / 180;
         const mu = given.friction || 0;

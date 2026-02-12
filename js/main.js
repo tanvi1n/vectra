@@ -158,6 +158,9 @@ function displayGivenParameters(given) {
     if (given.friction !== undefined) {
         html += `<div class="param-item"><span class="param-label">Friction (μ):</span><span class="param-value">${given.friction}</span></div>`;
     }
+    if (given.radius !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Radius:</span><span class="param-value">${given.radius} m</span></div>`;
+    }
     html += `<div class="param-item"><span class="param-label">Gravity:</span><span class="param-value">${given.gravity} m/s²</span></div>`;
     
     html += '</div>';
@@ -203,6 +206,21 @@ function displayDeducedParameters(deduced) {
     if (deduced.netForce !== undefined) {
         html += `<div class="param-item"><span class="param-label">Net Force:</span><span class="param-value">${deduced.netForce.toFixed(2)} N</span></div>`;
     }
+    if (deduced.centripetalAcceleration !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Centripetal Acceleration:</span><span class="param-value">${deduced.centripetalAcceleration.toFixed(2)} m/s²</span></div>`;
+    }
+    if (deduced.centripetalForce !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Centripetal Force:</span><span class="param-value">${deduced.centripetalForce.toFixed(2)} N</span></div>`;
+    }
+    if (deduced.angularVelocity !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Angular Velocity:</span><span class="param-value">${deduced.angularVelocity.toFixed(2)} rad/s</span></div>`;
+    }
+    if (deduced.period !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Period:</span><span class="param-value">${deduced.period.toFixed(2)} s</span></div>`;
+    }
+    if (deduced.frequency !== undefined) {
+        html += `<div class="param-item"><span class="param-label">Frequency:</span><span class="param-value">${deduced.frequency.toFixed(2)} Hz</span></div>`;
+    }
     
     html += '</div>';
     container.innerHTML = html;
@@ -243,6 +261,15 @@ function displayRequiredResults(deduced, required) {
     }
     if (required.includes('force') && deduced.netForce !== undefined) {
         html += `<div class="param-item highlight"><span class="param-label">Net Force:</span><span class="param-value">${deduced.netForce.toFixed(2)} N</span></div>`;
+    }
+    if (required.includes('force') && deduced.centripetalForce !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Centripetal Force:</span><span class="param-value">${deduced.centripetalForce.toFixed(2)} N</span></div>`;
+    }
+    if (required.includes('period') && deduced.period !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Period:</span><span class="param-value">${deduced.period.toFixed(2)} s</span></div>`;
+    }
+    if (required.includes('frequency') && deduced.frequency !== undefined) {
+        html += `<div class="param-item highlight"><span class="param-label">Frequency:</span><span class="param-value">${deduced.frequency.toFixed(2)} Hz</span></div>`;
     }
     
     html += '</div>';
