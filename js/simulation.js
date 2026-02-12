@@ -18,8 +18,9 @@ function startSimulation(data) {
         const d = data.given.distance || 10;
         const a = data.deduced.acceleration || 1;
         const v0 = data.given.velocity || 0;
-        if (a > 0) {
-            data.animationDuration = Math.sqrt(2 * d / a);
+        if (a > 0.1) {
+            const duration = Math.sqrt(2 * d / a);
+            data.animationDuration = Math.min(duration, 5); // Cap at 5 seconds
         } else if (v0 > 0) {
             data.animationDuration = d / v0;
         } else {
@@ -63,6 +64,14 @@ function animate() {
         drawFinalFrame(ctx, canvas, simulationData, t, totalTime, scale, offsetX, offsetY);
         stopSimulation();
         return;
+    
+    // Limit frame rate to 60fps
+    const now = Date.now();
+    if (simulationData.lastFrameTime && (now - simulationData.lastFrameTime) < 16) {
+        animationId = requestAnimationFrame(animate);
+        return;
+    }
+    simulationData.lastFrameTime = now;
     }
     
     // Clear canvas
@@ -412,6 +421,8 @@ function stopSimulation() {
         cancelAnimationFrame(animationId);
         animationId = null;
     }
+    simulationData = null;
+    startTime = null;
 }
 
 
@@ -432,7 +443,7 @@ function drawWorkEnergyVisualization(ctx, canvas, data) {
     
     // Title
     ctx.fillStyle = '#FF2FA3';
-    ctx.font = 'bold 20px Press Start 2P';
+    ctx.font = 'bold 20px "Press Start 2P", monospace';
     ctx.fillText('Work & Energy', canvas.width / 2 - 150, 50);
     
     // Draw bar chart for energies
@@ -475,7 +486,7 @@ function drawWorkEnergyVisualization(ctx, canvas, data) {
         
         // Draw label
         ctx.fillStyle = '#CFA7FF';
-        ctx.font = '12px Press Start 2P';
+        ctx.font = '12px "Press Start 2P", monospace';
         ctx.fillText(bar.label, x + 10, baseY + 30);
         
         // Draw value
@@ -506,21 +517,24 @@ function drawWorkEnergyVisualization(ctx, canvas, data) {
 }
 
 function drawInclinedPlane(ctx, canvas, data) {
-    const { given, deduced } = data;
-    
-    // Clear canvas first
-    ctx.fillStyle = '#0d0b14';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Calculate animation progress
-    const elapsed = (Date.now() - startTime) / 1000;
-    const duration = data.animationDuration || 3;
-    let progress = Math.min(elapsed / duration, 1);
-    
-    // Title
-    ctx.fillStyle = '#FF2FA3';
-    ctx.font = 'bold 18px Press Start 2P';
-    ctx.fillText('Inclined Plane', canvas.width / 2 - 130, 40);
+    try {
+        const { given, deduced } = data;
+        
+        // Clear canvas first
+        ctx.fillStyle = '#0d0b14';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Calculate animation progress
+        const elapsed = (Date.now() - startTime) / 1000;
+        const duration = data.animationDuration || 3;
+        let progress = Math.min(elapsed / duration, 1);
+        
+        console.log('Drawing incline:', { elapsed, duration, progress });
+        
+        // Title
+        ctx.fillStyle = '#FF2FA3';
+        ctx.font = 'bold 18px "Press Start 2P", monospace';
+        ctx.fillText('Inclined Plane', canvas.width / 2 - 130, 40);
     
     // Draw incline
     const baseX = 100;
@@ -658,6 +672,13 @@ function drawInclinedPlane(ctx, canvas, data) {
         ctx.fillStyle = '#FF2FA3';
         ctx.font = 'bold 12px Inter';
         ctx.fillText('COMPLETE', panelX + 80, panelY + panelHeight + 20);
+        console.log('Animation complete');
+    }
+    } catch (error) {
+        console.error('Error in drawInclinedPlane:', error);
+        ctx.fillStyle = '#FF2FA3';
+        ctx.font = '14px Inter';
+        ctx.fillText('Error: ' + error.message, 50, 50);
     }
 }
 
@@ -708,7 +729,7 @@ function drawCircularMotion(ctx, canvas, data) {
     
     // Title
     ctx.fillStyle = '#FF2FA3';
-    ctx.font = 'bold 18px Press Start 2P';
+    ctx.font = 'bold 18px "Press Start 2P", monospace';
     ctx.fillText('Circular Motion', canvas.width / 2 - 140, 40);
     
     // Circle center and radius

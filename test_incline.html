@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Incline Parser</title>
+</head>
+<body>
+    <h2>Incline Parser Test</h2>
+    <div id="output"></div>
+    
+    <script src="js/parser.js"></script>
+    <script>
+        const question = "A 8 kg box slides down an incline at 35 degrees with friction 0.2 over 12 m. Calculate acceleration.";
+        console.log("Testing:", question);
+        
+        try {
+            const result = parsePhysicsQuestion(question);
+            console.log("Result:", result);
+            document.getElementById('output').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById('output').innerHTML = '<p style="color:red">Error: ' + error.message + '</p>';
+        }
+    </script>
+</body>
+</html>
