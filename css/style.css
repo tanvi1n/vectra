@@ -67,6 +67,11 @@ input, button, textarea, select {
 /* ========== BASE STYLES ========== */
 body {
     background-color: var(--bg-secondary);
+    background-image: url('../background img.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
     padding-top: 70px;
@@ -226,16 +231,11 @@ p {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: var(--bg-secondary);
+    background: transparent;
 }
 
 .hero-bg-animation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--bg-deep);
+    display: none;
 }
 
 .hero-content {
@@ -243,6 +243,7 @@ p {
     z-index: 1;
     text-align: center;
     animation: floatIn 1.2s ease-out;
+    margin-top: 15vh;
 }
 
 @keyframes floatIn {
@@ -256,12 +257,23 @@ p {
     }
 }
 
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
 .hero-subtitle {
     font-family: 'Press Start 2P', cursive;
     font-size: 0.75rem;
     color: var(--text-secondary);
     letter-spacing: 4px;
     margin-bottom: var(--spacing-md);
+    animation: float 3s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(255, 138, 214, 0.3);
 }
 
 .hero-title {
@@ -271,6 +283,8 @@ p {
     color: white;
     margin-bottom: var(--spacing-lg);
     letter-spacing: 2px;
+    animation: float 3s ease-in-out infinite 0.2s;
+    text-shadow: 0 0 15px rgba(255, 47, 163, 0.4);
 }
 
 .hero-description {
@@ -279,12 +293,16 @@ p {
     color: var(--text-secondary);
     margin-bottom: var(--spacing-2xl);
     letter-spacing: 2px;
+    animation: float 3s ease-in-out infinite 0.4s;
+    text-shadow: 0 0 10px rgba(255, 138, 214, 0.3);
 }
 
 .btn-hero {
     font-family: 'Press Start 2P', cursive;
     font-size: 0.8rem;
     padding: var(--spacing-md) var(--spacing-2xl);
+    animation: float 3s ease-in-out infinite 0.6s;
+    box-shadow: 0 0 15px rgba(255, 47, 163, 0.3);
 }
 
 /* ========== CHAPTERS SECTION ========== */

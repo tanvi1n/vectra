@@ -43,7 +43,7 @@ function animate() {
     // Calculate elapsed time
     
     // Work-energy visualizations (static)
-    if (type === 'work' || type === 'kinetic' || type === 'potential' || type === 'power' || type === 'conservation' || type === 'incline') {
+    if (type === 'work' || type === 'kinetic' || type === 'potential' || type === 'power' || type === 'conservation' || type === 'incline' || type === 'circular') {
         drawWorkEnergyVisualization(ctx, canvas, simulationData);
         return;
     }
@@ -418,6 +418,12 @@ function stopSimulation() {
 function drawWorkEnergyVisualization(ctx, canvas, data) {
     const { type, given, deduced } = data;
     
+    // Circular motion visualization
+    if (type === 'circular') {
+        drawCircularMotion(ctx, canvas, data);
+        return;
+    }
+    
     // Inclined plane visualization
     if (type === 'incline') {
         drawInclinedPlane(ctx, canvas, data);
@@ -686,4 +692,132 @@ function drawArrow(ctx, x, y, dx, dy, color, label) {
     // Label
     ctx.font = '12px Inter';
     ctx.fillText(label, x + dx + 5, y + dy - 5);
+}
+
+function drawCircularMotion(ctx, canvas, data) {
+    const { given, deduced } = data;
+    
+    // Clear canvas
+    ctx.fillStyle = '#0d0b14';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Calculate animation
+    const elapsed = (Date.now() - startTime) / 1000;
+    const period = deduced.period || 2;
+    const angle = (elapsed / period) * 2 * Math.PI;
+    
+    // Title
+    ctx.fillStyle = '#FF2FA3';
+    ctx.font = 'bold 18px Press Start 2P';
+    ctx.fillText('Circular Motion', canvas.width / 2 - 140, 40);
+    
+    // Circle center and radius
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(canvas.width, canvas.height) * 0.25;
+    
+    // Draw circle path
+    ctx.strokeStyle = '#3d3650';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Draw center point
+    ctx.fillStyle = '#CFA7FF';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Object position
+    const objX = centerX + radius * Math.cos(angle);
+    const objY = centerY + radius * Math.sin(angle);
+    
+    // Draw object
+    ctx.fillStyle = '#FF4DC4';
+    ctx.beginPath();
+    ctx.arc(objX, objY, 15, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.strokeStyle = '#2A0E44';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(objX, objY, 15, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Draw velocity vector (tangent)
+    const v = given.velocity || 0;
+    const vScale = 3;
+    const vx = -v * Math.sin(angle) * vScale;
+    const vy = v * Math.cos(angle) * vScale;
+    drawArrow(ctx, objX, objY, vx, vy, '#FF8AD6', 'v');
+    
+    // Draw centripetal force vector (toward center)
+    const fc = deduced.centripetalForce || 0;
+    const fcScale = 0.5;
+    const fcx = -(objX - centerX) * fcScale;
+    const fcy = -(objY - centerY) * fcScale;
+    drawArrow(ctx, objX, objY, fcx, fcy, '#FF2FA3', 'Fc');
+    
+    // Draw radius line
+    ctx.strokeStyle = '#CFA7FF';
+    ctx.setLineDash([5, 5]);
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(objX, objY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Info panel
+    const panelX = 20;
+    const panelY = 80;
+    const panelWidth = 250;
+    const panelHeight = 200;
+    
+    ctx.fillStyle = 'rgba(58, 10, 92, 0.9)';
+    ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+    ctx.strokeStyle = '#2A0E44';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+    
+    ctx.fillStyle = '#CFA7FF';
+    ctx.font = '11px Inter';
+    let yPos = panelY + 20;
+    const lineHeight = 18;
+    
+    ctx.fillText(`Time: ${elapsed.toFixed(2)} s`, panelX + 10, yPos);
+    yPos += lineHeight;
+    
+    if (given.velocity !== undefined) {
+        ctx.fillText(`Velocity: ${given.velocity} m/s`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    if (given.radius !== undefined) {
+        ctx.fillText(`Radius: ${given.radius} m`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    if (deduced.centripetalAcceleration !== undefined) {
+        ctx.fillText(`Centripetal Acc: ${deduced.centripetalAcceleration.toFixed(2)} m/s²`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    if (deduced.centripetalForce !== undefined) {
+        ctx.fillText(`Centripetal Force: ${deduced.centripetalForce.toFixed(2)} N`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    if (deduced.angularVelocity !== undefined) {
+        ctx.fillText(`Angular Velocity: ${deduced.angularVelocity.toFixed(2)} rad/s`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    if (deduced.period !== undefined) {
+        ctx.fillText(`Period: ${deduced.period.toFixed(2)} s`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    if (deduced.frequency !== undefined) {
+        ctx.fillText(`Frequency: ${deduced.frequency.toFixed(2)} Hz`, panelX + 10, yPos);
+        yPos += lineHeight;
+    }
+    
+    // Continue animation
+    animationId = requestAnimationFrame(animate);
 }
