@@ -101,6 +101,8 @@ function parsePhysicsProblem(text) {
         type = 'work';
     } else if (text.includes('find power') || text.includes('calculate power')) {
         type = 'power';
+    } else if (text.includes('pendulum') || text.includes('swings') || text.includes('oscillates')) {
+        type = 'pendulum';
     } else if (text.includes('total distance') || (text.includes('walked') && text.includes('distance'))) {
         type = 'distance';
     } else if (text.includes('uniform acceleration') || text.includes('uniformly accelerated') || text.includes('constant acceleration')) {
@@ -203,14 +205,17 @@ function parsePhysicsProblem(text) {
     }
     const velocity = velocityMatch ? parseFloat(velocityMatch[1]) : null;
     
-    // Extract height (m) - support variations
-    let heightMatch = text.match(/(?:height|from|at)\s+(?:of\s+|a\s+height\s+of\s+)?(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)/i);
-    if (!heightMatch) {
-        heightMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)\s+(?:high|tall|above)/i);
-    }
-    if (!heightMatch) {
-        // Try just number + m pattern
-        heightMatch = text.match(/(\d+(?:\.\d+)?)\s*m(?:\s|$|\.)/i);
+    // Extract height (m) - support variations (but not for pendulum)
+    let heightMatch = null;
+    if (!text.includes('pendulum') && !text.includes('swings') && !text.includes('oscillates')) {
+        heightMatch = text.match(/(?:height|from|at)\s+(?:of\s+|a\s+height\s+of\s+)?(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)/i);
+        if (!heightMatch) {
+            heightMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)\s+(?:high|tall|above)/i);
+        }
+        if (!heightMatch) {
+            // Try just number + m pattern
+            heightMatch = text.match(/(\d+(?:\.\d+)?)\s*m(?:\s|$|\.)/i);
+        }
     }
     const height = heightMatch ? parseFloat(heightMatch[1]) : null;
     
@@ -221,6 +226,10 @@ function parsePhysicsProblem(text) {
     // Extract angle (degrees) - support variations
     const angleMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:degrees?|°|deg)/i);
     const angle = angleMatch ? parseFloat(angleMatch[1]) : null;
+    
+    // Extract length (m) - for pendulum
+    const lengthMatch = text.match(/length\s+(?:of\s+)?(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)/i);
+    const length = lengthMatch ? parseFloat(lengthMatch[1]) : null;
     
     // Extract radius (m) - support variations
     const radiusMatch = text.match(/radius\s+(?:of\s+)?(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)/i);
@@ -289,10 +298,10 @@ function parsePhysicsProblem(text) {
     if (text.includes('find force') || text.includes('calculate force') || text.includes('find centripetal force') || text.includes('what will be the centripetal force') || text.includes('what will be the force')) {
         required.push('force');
     }
-    if (text.includes('find period') || text.includes('calculate period')) {
+    if (text.includes('period')) {
         required.push('period');
     }
-    if (text.includes('find frequency') || text.includes('calculate frequency')) {
+    if (text.includes('frequency')) {
         required.push('frequency');
     }
     if (text.includes('find work') || text.includes('calculate work') || text.includes('work done')) {
@@ -345,6 +354,7 @@ function parsePhysicsProblem(text) {
     if (time !== null) given.time = time;
     if (angle !== null) given.angle = angle;
     if (friction !== null) given.friction = friction;
+    if (length !== null) given.length = length;
     if (radius !== null) given.radius = radius;
     if (acceleration !== null) given.acceleration = acceleration;
     if (initialVelocity !== null) given.initialVelocity = initialVelocity;
@@ -459,6 +469,29 @@ function calculatePhysics(data) {
             deduced.period = v > 0 ? (2 * Math.PI * r) / v : 0;
             deduced.frequency = deduced.period > 0 ? 1 / deduced.period : 0;
         }
+        
+    } else if (type === 'pendulum') {
+        const L = given.length || given.distance || given.radius || 1;
+        const theta0 = (given.angle || 10) * Math.PI / 180;
+        const m = given.mass || 0;
+        
+        if (L <= 0) {
+            return { error: true, message: 'Pendulum length must be greater than zero.' };
+        }
+        
+        deduced.period = 2 * Math.PI * Math.sqrt(L / g);
+        deduced.frequency = 1 / deduced.period;
+        deduced.maxHeight = L * (1 - Math.cos(theta0));
+        deduced.maxVelocity = Math.sqrt(2 * g * deduced.maxHeight);
+        
+        if (m > 0) {
+            deduced.potentialEnergy = m * g * deduced.maxHeight;
+            deduced.kineticEnergy = 0.5 * m * deduced.maxVelocity * deduced.maxVelocity;
+            deduced.totalEnergy = deduced.potentialEnergy;
+        }
+        
+        deduced.amplitude = theta0 * 180 / Math.PI;
+        deduced.length = L;
         
     } else if (type === 'incline') {
         const m = given.mass || 0;
