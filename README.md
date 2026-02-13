@@ -25,17 +25,29 @@ VECTRA is an interactive web application designed to help users simulate and vis
 
 ```
 .
-├── chapter1.html         # Chapter 1: 1D & 2D Motion Simulator
-├── chapter2.html         # Chapter 2: Work and Energy Simulator
-├── chapter3.html         # Chapter 3: Newton's Laws Simulator
-├── chapters.html         # Page listing all available chapters
 ├── index.html            # Main landing page
+├── README.md             # Project documentation
+├── pages/                # All chapter and navigation pages
+│   ├── chapter1.html     # Chapter 1: 1D & 2D Motion Simulator
+│   ├── chapter2.html     # Chapter 2: Work and Energy Simulator
+│   ├── chapter3.html     # Chapter 3: Newton's Laws Simulator
+│   ├── chapter4.html     # Chapter 4: Additional Physics Concepts
+│   └── chapters.html     # Page listing all available chapters
 ├── css/
 │   └── style.css         # Global styles for the application
-└── js/
-    ├── main.js           # Core application logic, UI interactions, and display functions
-    ├── parser.js         # Handles natural language processing for physics problems
-    └── simulation.js     # Manages canvas drawing, animation loops, and detailed physics calculations for visualizations
+├── js/
+│   ├── main.js           # Core application logic, UI interactions, and display functions
+│   ├── parser.js         # Handles natural language processing for physics problems
+│   └── simulation.js     # Manages canvas drawing, animation loops, and detailed physics calculations
+├── assets/               # Images and media files
+├── tests/                # Test and debug files
+│   ├── debug_parser.html
+│   ├── test_incline.html
+│   ├── test_parser.html
+│   ├── test_question.txt
+│   └── quick_test.js
+├── docs/                 # Technical documentation
+└── backend/              # Backend server files (optional)
 ```
 
 ## How to Run
